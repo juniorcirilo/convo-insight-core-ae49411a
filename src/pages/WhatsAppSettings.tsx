@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InstancesList, AddInstanceDialog, TeamMembersList, AssignmentRulesManager, InstanceSetupCollapsible, SetupGuideCollapsible, SecuritySettings, WebhooksManager, ApiTokensManager } from "@/components/settings";
 import { MacrosManager } from "@/components/macros";
+import { CampaignsManager } from "@/components/campaigns";
 import { useAuth } from "@/contexts/AuthContext";
 
 const WhatsAppSettings = () => {
@@ -47,6 +48,7 @@ const WhatsAppSettings = () => {
             <TabsTrigger value="instances">Instâncias</TabsTrigger>
             <TabsTrigger value="macros">Macros</TabsTrigger>
             <TabsTrigger value="assignment">Atribuição</TabsTrigger>
+            {isAdmin && <TabsTrigger value="campaigns">Campanhas</TabsTrigger>}
             {isAdmin && <TabsTrigger value="webhooks">Webhooks</TabsTrigger>}
             {isAdmin && <TabsTrigger value="api">API</TabsTrigger>}
             {isAdmin && <TabsTrigger value="team">Equipe</TabsTrigger>}
@@ -78,6 +80,12 @@ const WhatsAppSettings = () => {
           <TabsContent value="assignment" className="mt-6">
             <AssignmentRulesManager />
           </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="campaigns" className="mt-6">
+              <CampaignsManager />
+            </TabsContent>
+          )}
 
           {isAdmin && (
             <TabsContent value="webhooks" className="mt-6">

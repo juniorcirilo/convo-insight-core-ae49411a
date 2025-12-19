@@ -1,1 +1,4 @@
 project_id = "qddetjblszbvnmzxhiao"
+
+[functions.send-campaign-messages]
+verify_jwt = true

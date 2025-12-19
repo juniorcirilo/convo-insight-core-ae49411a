@@ -266,7 +266,7 @@ async function findOrCreateContact(
     // Buscar contato existente com qualquer variante
     const { data: existingContact } = await supabase
       .from('whatsapp_contacts')
-      .select('id, name, phone_number')
+      .select('id, name, phone_number, is_group')
       .eq('instance_id', instanceId)
       .in('phone_number', phoneVariants)
       .maybeSingle();
@@ -284,6 +284,18 @@ async function findOrCreateContact(
     }
 
     if (existingContact) {
+      // Update is_group if contact exists but is_group is incorrect
+      if (isGroup && !existingContact.is_group) {
+        await supabase
+          .from('whatsapp_contacts')
+          .update({ 
+            is_group: true,
+            updated_at: new Date().toISOString() 
+          })
+          .eq('id', existingContact.id);
+        console.log(`[evolution-webhook] Contact marked as group: ${existingContact.id}`);
+      }
+
       // Only update name if:
       // 1. Message is NOT from me (avoid setting contact name to instance owner)
       // 2. We have a real name (not just phone number)
