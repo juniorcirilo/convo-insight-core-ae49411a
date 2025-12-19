@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Search, Plus, Settings, Loader2, BarChart3, ChevronRight, ChevronLeft, MessageSquare, Users } from "lucide-react";
+import { Search, Plus, Settings, Loader2, BarChart3, ChevronRight, ChevronLeft, MessageSquare, Users, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -162,6 +162,12 @@ const ConversationsSidebar = ({ selectedId, onSelect, instanceId, isCollapsed, o
           </Button>
         </Link>
         
+        <Link to="/vendas">
+          <Button variant="ghost" size="icon" title="Dashboard de Vendas">
+            <TrendingUp className="h-4 w-4" />
+          </Button>
+        </Link>
+        
         <Link to="/whatsapp/settings">
           <Button variant="ghost" size="icon" title="Configurações">
             <Settings className="h-4 w-4" />
@@ -206,6 +212,11 @@ const ConversationsSidebar = ({ selectedId, onSelect, instanceId, isCollapsed, o
             <Link to="/whatsapp/relatorio">
               <Button variant="ghost" size="icon" title="Relatórios">
                 <BarChart3 className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/vendas">
+              <Button variant="ghost" size="icon" title="Dashboard de Vendas">
+                <TrendingUp className="h-5 w-5" />
               </Button>
             </Link>
             <Link to="/whatsapp/settings">

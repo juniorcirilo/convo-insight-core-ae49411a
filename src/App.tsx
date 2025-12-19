@@ -14,6 +14,7 @@ import WhatsApp from "./pages/WhatsApp";
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import WhatsAppRelatorio from "./pages/WhatsAppRelatorio";
 import WhatsAppContatos from "./pages/WhatsAppContatos";
+import SalesDashboard from "./pages/SalesDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/whatsapp/settings" element={<ProtectedRoute><WhatsAppSettings /></ProtectedRoute>} />
                 <Route path="/whatsapp/relatorio" element={<ProtectedRoute><WhatsAppRelatorio /></ProtectedRoute>} />
                 <Route path="/whatsapp/contatos" element={<ProtectedRoute><WhatsAppContatos /></ProtectedRoute>} />
+                <Route path="/vendas" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

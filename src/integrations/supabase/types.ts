@@ -127,6 +127,145 @@ export type Database = {
           },
         ]
       }
+      lead_activities: {
+        Row: {
+          activity_type: string
+          created_at: string
+          description: string | null
+          id: string
+          lead_id: string
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          lead_id: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          lead_id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          assigned_to: string | null
+          closed_at: string | null
+          company: string | null
+          contact_id: string | null
+          conversation_id: string | null
+          created_at: string
+          email: string | null
+          expected_close_date: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          notes: string | null
+          phone: string | null
+          probability: number | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["lead_status"]
+          tags: string[] | null
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          company?: string | null
+          contact_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          email?: string | null
+          expected_close_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          probability?: number | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[] | null
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          company?: string | null
+          contact_id?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          email?: string | null
+          expected_close_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          probability?: number | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[] | null
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -186,6 +325,47 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      sales_targets: {
+        Row: {
+          created_at: string
+          id: string
+          period_end: string
+          period_start: string
+          target_leads: number | null
+          target_value: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_end: string
+          period_start: string
+          target_leads?: number | null
+          target_value: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          target_leads?: number | null
+          target_value?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_targets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -827,6 +1007,21 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "supervisor" | "agent"
+      lead_source:
+        | "whatsapp"
+        | "website"
+        | "referral"
+        | "ads"
+        | "organic"
+        | "other"
+      lead_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "proposal"
+        | "negotiation"
+        | "won"
+        | "lost"
       sentiment_type: "positive" | "neutral" | "negative"
     }
     CompositeTypes: {
@@ -956,6 +1151,23 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "supervisor", "agent"],
+      lead_source: [
+        "whatsapp",
+        "website",
+        "referral",
+        "ads",
+        "organic",
+        "other",
+      ],
+      lead_status: [
+        "new",
+        "contacted",
+        "qualified",
+        "proposal",
+        "negotiation",
+        "won",
+        "lost",
+      ],
       sentiment_type: ["positive", "neutral", "negative"],
     },
   },
