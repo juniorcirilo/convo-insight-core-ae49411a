@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useSalesMetrics, useLeads } from "@/hooks/sales";
 import { 
@@ -8,6 +9,7 @@ import {
   KanbanBoard 
 } from "@/components/sales";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { 
   Users, 
   DollarSign, 
@@ -18,11 +20,13 @@ import {
   XCircle,
   Clock,
   LayoutGrid,
-  Kanban
+  Kanban,
+  ArrowLeft
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const SalesDashboardContent = () => {
+  const navigate = useNavigate();
   const { data: metrics, isLoading: metricsLoading } = useSalesMetrics();
   const { leads, isLoading: leadsLoading } = useLeads();
 
@@ -39,11 +43,16 @@ const SalesDashboardContent = () => {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard de Vendas</h1>
-          <p className="text-muted-foreground">
-            Acompanhe suas métricas e pipeline de vendas
-          </p>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard de Vendas</h1>
+            <p className="text-muted-foreground">
+              Acompanhe suas métricas e pipeline de vendas
+            </p>
+          </div>
         </div>
       </div>
 

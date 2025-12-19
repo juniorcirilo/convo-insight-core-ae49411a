@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, MessageSquare } from 'lucide-react';
 import { ConversationSentiment } from './ConversationSentiment';
 import { ConversationSummaries } from './ConversationSummaries';
 import { ConversationNotes } from './ConversationNotes';
+import { ConversationLeadStatus } from './ConversationLeadStatus';
 import { ConversationTopics } from '../topics/ConversationTopics';
 
 interface ConversationDetailsSidebarProps {
@@ -68,6 +69,11 @@ export function ConversationDetailsSidebar({
       {/* Conteúdo */}
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
+          {/* Pipeline de Vendas */}
+          <ConversationLeadStatus conversationId={conversationId} />
+
+          <Separator />
+
           {/* Sentimento */}
           <ConversationSentiment conversationId={conversationId} />
 
