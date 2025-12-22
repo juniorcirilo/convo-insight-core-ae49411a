@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Settings, UserPlus, Repeat, Pencil } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Settings, UserPlus, Repeat, Pencil, Building2 } from "lucide-react";
 import { SentimentCard } from "./SentimentCard";
 import { Tables } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
@@ -10,11 +11,12 @@ import { ChatHeaderMenu } from "./ChatHeaderMenu";
 import { QueueIndicator } from "@/components/conversations/QueueIndicator";
 import { AssignAgentDialog } from "@/components/conversations/AssignAgentDialog";
 import { EditContactModal } from "./EditContactModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversationAssignment } from "@/hooks/whatsapp/useConversationAssignment";
 import { isContactNameMissing } from "@/utils/contactUtils";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 type Contact = Tables<'whatsapp_contacts'>;
 type Sentiment = Tables<'whatsapp_sentiment_analysis'>;
@@ -33,8 +35,25 @@ export const ChatHeader = ({ contact, sentiment, isAnalyzing, onAnalyze, convers
   const { data: topicsData } = useConversationTopics(conversationId || null);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);
+  const [sectorName, setSectorName] = useState<string | null>(null);
   const { user, isAdmin, isSupervisor } = useAuth();
   const { assignConversation } = useConversationAssignment();
+  
+  // Fetch sector name
+  useEffect(() => {
+    if (conversation?.sector_id) {
+      supabase
+        .from('sectors')
+        .select('name')
+        .eq('id', conversation.sector_id)
+        .single()
+        .then(({ data }) => {
+          setSectorName(data?.name || null);
+        });
+    } else {
+      setSectorName(null);
+    }
+  }, [conversation?.sector_id]);
   
   if (!contact) return null;
   
@@ -93,11 +112,20 @@ export const ChatHeader = ({ contact, sentiment, isAnalyzing, onAnalyze, convers
             <p className="text-xs text-muted-foreground">
               {contact.phone_number}
             </p>
-            {topicsData?.topics && topicsData.topics.length > 0 && (
-              <div className="mt-1">
+            
+            {/* Sector badge and topics */}
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              {sectorName && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  <Building2 className="h-3 w-3" />
+                  {sectorName}
+                </Badge>
+              )}
+              {topicsData?.topics && topicsData.topics.length > 0 && (
                 <TopicBadges topics={topicsData.topics} size="sm" showIcon={true} maxTopics={3} />
-              </div>
-            )}
+              )}
+            </div>
+            
             {conversation && (
               <div className="mt-1">
                 <QueueIndicator
