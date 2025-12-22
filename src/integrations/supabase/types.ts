@@ -500,6 +500,7 @@ export type Database = {
           phone: string | null
           pipeline_insight: Json | null
           probability: number | null
+          sector_id: string | null
           source: Database["public"]["Enums"]["lead_source"]
           status: Database["public"]["Enums"]["lead_status"]
           tags: string[] | null
@@ -522,6 +523,7 @@ export type Database = {
           phone?: string | null
           pipeline_insight?: Json | null
           probability?: number | null
+          sector_id?: string | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
@@ -544,6 +546,7 @@ export type Database = {
           phone?: string | null
           pipeline_insight?: Json | null
           probability?: number | null
+          sector_id?: string | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
@@ -570,6 +573,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
             referencedColumns: ["id"]
           },
         ]

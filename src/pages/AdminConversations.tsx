@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Monitor } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Monitor, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAdminConversations } from '@/hooks/admin/useAdminConversations';
@@ -68,8 +68,9 @@ const AdminConversations = () => {
       <header className="border-b border-border p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-5 w-5" />
+            <Button variant="ghost" size="sm" onClick={() => navigate('/whatsapp')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar ao WhatsApp
             </Button>
             <div className="flex items-center gap-2">
               <Monitor className="h-6 w-6 text-primary" />
@@ -79,10 +80,16 @@ const AdminConversations = () => {
             </div>
           </div>
           
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/whatsapp/settings')}>
+              <Settings className="h-4 w-4 mr-2" />
+              Configurações
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Atualizar
+            </Button>
+          </div>
         </div>
       </header>
 

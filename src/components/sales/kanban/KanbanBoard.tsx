@@ -9,12 +9,14 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core';
-import { useLeads, Lead, LeadStatus } from '@/hooks/sales/useLeads';
+import { useLeads, Lead, LeadStatus, KanbanViewFilters } from '@/hooks/sales/useLeads';
 import { useLeadStatusHistory } from '@/hooks/sales/useLeadStatusHistory';
+import { useAuth } from '@/contexts/AuthContext';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 import { LeadDetailModal } from './LeadDetailModal';
 import { NewLeadModal } from './NewLeadModal';
+import { KanbanFilters, KanbanViewMode } from './KanbanFilters';
 import { toast } from 'sonner';
 import { 
   UserPlus, 
@@ -78,7 +80,32 @@ const COLUMNS: {
 ];
 
 export const KanbanBoard = () => {
-  const { leads, isLoading, updateLeadStatus } = useLeads();
+  const { user, isAdmin, isSupervisor } = useAuth();
+  
+  // Filter state for admin/supervisor
+  const [viewMode, setViewMode] = useState<KanbanViewMode>('all');
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [selectedSectorId, setSelectedSectorId] = useState<string | null>(null);
+
+  // Build filters based on role and view mode
+  const filters = useMemo<KanbanViewFilters>(() => {
+    // Agents only see their own leads (RLS enforces this, but we also filter client-side for UX)
+    if (!isAdmin && !isSupervisor) {
+      return { assignedTo: user?.id };
+    }
+    
+    // Admin/Supervisor filters
+    if (viewMode === 'member' && selectedMemberId) {
+      return { selectedMemberId };
+    }
+    if (viewMode === 'sector' && selectedSectorId) {
+      return { selectedSectorId };
+    }
+    
+    return {}; // All leads
+  }, [isAdmin, isSupervisor, user?.id, viewMode, selectedMemberId, selectedSectorId]);
+
+  const { leads, isLoading, updateLeadStatus } = useLeads(filters);
   const { recordStatusChange } = useLeadStatusHistory();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -165,6 +192,16 @@ export const KanbanBoard = () => {
 
   return (
     <>
+      {/* Admin/Supervisor Filters */}
+      <KanbanFilters
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        selectedMemberId={selectedMemberId}
+        onMemberChange={setSelectedMemberId}
+        selectedSectorId={selectedSectorId}
+        onSectorChange={setSelectedSectorId}
+      />
+
       <ScrollArea className="w-full">
         <DndContext
           sensors={sensors}

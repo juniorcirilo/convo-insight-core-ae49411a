@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Search, Plus, Settings, Loader2, BarChart3, ChevronRight, ChevronLeft, MessageSquare, Users, TrendingUp } from "lucide-react";
+import { Search, Plus, Settings, Loader2, BarChart3, ChevronRight, ChevronLeft, MessageSquare, Users, TrendingUp, Monitor } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,6 +14,7 @@ import { NotificationToggle } from "@/components/notifications/NotificationToggl
 import { UserMenu } from "@/components/auth/UserMenu";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ConversationsSidebarProps {
   selectedId: string | null;
@@ -34,7 +35,7 @@ const ConversationsSidebar = ({ selectedId, onSelect, instanceId, isCollapsed, o
   const [isNewConversationOpen, setIsNewConversationOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
-  const { user } = useAuth();
+  const { user, isAdmin, isSupervisor } = useAuth();
 
   // Debounce search for advanced message search
   const debouncedSearchQuery = useDebounce(search, 300);
@@ -168,6 +169,15 @@ const ConversationsSidebar = ({ selectedId, onSelect, instanceId, isCollapsed, o
           </Button>
         </Link>
         
+        {/* Monitoring - Admin/Supervisor only */}
+        {(isAdmin || isSupervisor) && (
+          <Link to="/admin/conversas">
+            <Button variant="ghost" size="icon" title="Monitoramento">
+              <Monitor className="h-4 w-4" />
+            </Button>
+          </Link>
+        )}
+        
         <Link to="/whatsapp/settings">
           <Button variant="ghost" size="icon" title="Configurações">
             <Settings className="h-4 w-4" />
@@ -219,6 +229,19 @@ const ConversationsSidebar = ({ selectedId, onSelect, instanceId, isCollapsed, o
                 <TrendingUp className="h-5 w-5" />
               </Button>
             </Link>
+            {/* Monitoring - Admin/Supervisor only */}
+            {(isAdmin || isSupervisor) && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/admin/conversas">
+                    <Button variant="ghost" size="icon">
+                      <Monitor className="h-5 w-5 text-primary" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Monitoramento de Conversas</TooltipContent>
+              </Tooltip>
+            )}
             <Link to="/whatsapp/settings">
               <Button variant="ghost" size="icon" title="Configurações">
                 <Settings className="h-5 w-5" />

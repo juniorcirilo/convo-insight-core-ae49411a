@@ -38,7 +38,13 @@ export interface LeadFilters {
   search?: string;
 }
 
-export const useLeads = (filters?: LeadFilters) => {
+export interface KanbanViewFilters extends LeadFilters {
+  viewMode?: 'personal' | 'member' | 'sector' | 'all';
+  selectedMemberId?: string;
+  selectedSectorId?: string;
+}
+
+export const useLeads = (filters?: KanbanViewFilters) => {
   const queryClient = useQueryClient();
 
   const { data: leads = [], isLoading, error } = useQuery({
@@ -49,7 +55,8 @@ export const useLeads = (filters?: LeadFilters) => {
         .select(`
           *,
           contact:whatsapp_contacts(id, name, phone_number, profile_picture_url),
-          assigned_agent:profiles!leads_assigned_to_fkey(id, full_name, avatar_url)
+          assigned_agent:profiles!leads_assigned_to_fkey(id, full_name, avatar_url),
+          sector:sectors(id, name)
         `)
         .order('created_at', { ascending: false });
 
@@ -70,6 +77,16 @@ export const useLeads = (filters?: LeadFilters) => {
       }
       if (filters?.search) {
         query = query.or(`name.ilike.%${filters.search}%,company.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
+      }
+
+      // Filtro por membro específico (modo admin)
+      if (filters?.selectedMemberId) {
+        query = query.eq('assigned_to', filters.selectedMemberId);
+      }
+
+      // Filtro por setor específico (modo admin)
+      if (filters?.selectedSectorId) {
+        query = query.eq('sector_id', filters.selectedSectorId);
       }
 
       const { data, error } = await query;
