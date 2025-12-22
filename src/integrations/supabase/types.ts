@@ -1268,6 +1268,7 @@ export type Database = {
           edited_at: string | null
           id: string
           is_from_me: boolean | null
+          is_internal: boolean
           media_mimetype: string | null
           media_url: string | null
           message_id: string
@@ -1276,6 +1277,7 @@ export type Database = {
           original_content: string | null
           quoted_message_id: string | null
           remote_jid: string
+          sent_by: string | null
           status: string | null
           timestamp: string
           transcription_status: string | null
@@ -1288,6 +1290,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_from_me?: boolean | null
+          is_internal?: boolean
           media_mimetype?: string | null
           media_url?: string | null
           message_id: string
@@ -1296,6 +1299,7 @@ export type Database = {
           original_content?: string | null
           quoted_message_id?: string | null
           remote_jid: string
+          sent_by?: string | null
           status?: string | null
           timestamp: string
           transcription_status?: string | null
@@ -1308,6 +1312,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_from_me?: boolean | null
+          is_internal?: boolean
           media_mimetype?: string | null
           media_url?: string | null
           message_id?: string
@@ -1316,6 +1321,7 @@ export type Database = {
           original_content?: string | null
           quoted_message_id?: string | null
           remote_jid?: string
+          sent_by?: string | null
           status?: string | null
           timestamp?: string
           transcription_status?: string | null
@@ -1326,6 +1332,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
-import { Check, CheckCheck, Clock, Reply, Pencil, User } from "lucide-react";
+import { Check, CheckCheck, Clock, Reply, Pencil, User, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QuotedMessagePreview } from "./QuotedMessagePreview";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -258,11 +259,21 @@ export const MessageBubble = ({ message, reactions = [], onReply }: MessageBubbl
           className={cn(
             'p-3 space-y-1',
             message.message_type === 'sticker' && 'bg-transparent border-none shadow-none p-0',
-            isFromMe
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-card text-card-foreground'
+            message.is_internal
+              ? 'bg-amber-500/20 border-amber-500/50 text-foreground border-dashed'
+              : isFromMe
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-card text-card-foreground'
           )}
         >
+          {message.is_internal && (
+            <div className="flex items-center gap-1.5 mb-2">
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/50">
+                <Eye className="h-3 w-3 mr-1" />
+                Nota Interna
+              </Badge>
+            </div>
+          )}
           {message.quoted_message_id && (
             <QuotedMessagePreview messageId={message.quoted_message_id} />
           )}
