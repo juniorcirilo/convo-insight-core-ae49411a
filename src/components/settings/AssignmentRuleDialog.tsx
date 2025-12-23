@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -67,6 +67,8 @@ export function AssignmentRuleDialog({
     },
   });
 
+  const initGuardRef = useRef<string>("");
+
   const selectedInstanceId = watch("instance_id");
   const selectedSectorId = watch("sector_id");
   
@@ -84,13 +86,22 @@ export function AssignmentRuleDialog({
 
   // Reset sector when instance changes
   useEffect(() => {
-    if (selectedInstanceId && !rule?.sector_id && selectedSectorId !== "") {
-      setValue("sector_id", "");
-    }
-  }, [selectedInstanceId, selectedSectorId, setValue, rule?.sector_id]);
+    if (!open) return;
+    if (!selectedInstanceId) return;
+    if (rule?.sector_id) return;
+    if (selectedSectorId === "") return;
+
+    setValue("sector_id", "");
+  }, [open, selectedInstanceId, selectedSectorId, setValue, rule?.sector_id]);
 
   // Reset form when rule changes
   useEffect(() => {
+    if (!open) return;
+
+    const key = `${open ? "open" : "closed"}:${rule?.id ?? "new"}`;
+    if (initGuardRef.current === key) return;
+    initGuardRef.current = key;
+
     if (rule) {
       reset({
         name: rule.name || "",

@@ -41,6 +41,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
   const [isUploading, setIsUploading] = useState(false);
   const [existingMediaUrl, setExistingMediaUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initGuardRef = useRef<string>("");
   const { toast } = useToast();
   
   const { createCampaign, updateCampaign, isCreating, isUpdating } = useCampaigns();
@@ -88,6 +89,13 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
   });
 
   useEffect(() => {
+    // Guard: prevent repeated resets that can cause Radix/Dialog ref loops
+    const key = `${open ? "open" : "closed"}:${campaignId ?? "new"}`;
+    if (initGuardRef.current === key) return;
+    initGuardRef.current = key;
+
+    if (!open) return;
+
     if (campaign) {
       form.reset({
         name: campaign.name,
