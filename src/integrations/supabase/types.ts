@@ -387,38 +387,6 @@ export type Database = {
           },
         ]
       }
-      feedbacks: {
-        Row: {
-          comentario: string | null
-          created_at: string
-          id: string
-          nota: number
-          ticket_id: string
-        }
-        Insert: {
-          comentario?: string | null
-          created_at?: string
-          id?: string
-          nota: number
-          ticket_id: string
-        }
-        Update: {
-          comentario?: string | null
-          created_at?: string
-          id?: string
-          nota?: number
-          ticket_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "feedbacks_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "tickets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       lead_activities: {
         Row: {
           activity_type: string
@@ -843,43 +811,31 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
-          gera_ticket: boolean | null
           id: string
           instance_id: string
           is_active: boolean | null
           is_default: boolean | null
-          mensagem_boas_vindas: string | null
-          mensagem_encerramento: string | null
           name: string
-          tipo_atendimento: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
-          gera_ticket?: boolean | null
           id?: string
           instance_id: string
           is_active?: boolean | null
           is_default?: boolean | null
-          mensagem_boas_vindas?: string | null
-          mensagem_encerramento?: string | null
           name: string
-          tipo_atendimento?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
-          gera_ticket?: boolean | null
           id?: string
           instance_id?: string
           is_active?: boolean | null
           is_default?: boolean | null
-          mensagem_boas_vindas?: string | null
-          mensagem_encerramento?: string | null
           name?: string
-          tipo_atendimento?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -888,58 +844,6 @@ export type Database = {
             columns: ["instance_id"]
             isOneToOne: false
             referencedRelation: "whatsapp_instances"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tickets: {
-        Row: {
-          closed_at: string | null
-          closed_by: string | null
-          conversation_id: string
-          created_at: string
-          id: string
-          sector_id: string
-          status: string
-        }
-        Insert: {
-          closed_at?: string | null
-          closed_by?: string | null
-          conversation_id: string
-          created_at?: string
-          id?: string
-          sector_id: string
-          status?: string
-        }
-        Update: {
-          closed_at?: string | null
-          closed_by?: string | null
-          conversation_id?: string
-          created_at?: string
-          id?: string
-          sector_id?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tickets_closed_by_fkey"
-            columns: ["closed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tickets_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "whatsapp_conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tickets_sector_id_fkey"
-            columns: ["sector_id"]
-            isOneToOne: false
-            referencedRelation: "sectors"
             referencedColumns: ["id"]
           },
         ]
@@ -1562,7 +1466,6 @@ export type Database = {
           remote_jid: string
           sent_by: string | null
           status: string | null
-          ticket_id: string | null
           timestamp: string
           transcription_status: string | null
         }
@@ -1585,7 +1488,6 @@ export type Database = {
           remote_jid: string
           sent_by?: string | null
           status?: string | null
-          ticket_id?: string | null
           timestamp: string
           transcription_status?: string | null
         }
@@ -1608,7 +1510,6 @@ export type Database = {
           remote_jid?: string
           sent_by?: string | null
           status?: string | null
-          ticket_id?: string | null
           timestamp?: string
           transcription_status?: string | null
         }
@@ -1625,13 +1526,6 @@ export type Database = {
             columns: ["sent_by"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "whatsapp_messages_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "tickets"
             referencedColumns: ["id"]
           },
         ]

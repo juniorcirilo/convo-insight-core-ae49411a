@@ -462,75 +462,12 @@ async function applyAutoAssignment(
   }
 }
 
-// Create ticket for conversation if sector requires it
-async function createTicketIfNeeded(
-  supabase: any,
-  conversationId: string,
-  sectorId: string | null
-): Promise<{ ticketId: string | null; welcomeMessage: string | null }> {
-  if (!sectorId) {
-    return { ticketId: null, welcomeMessage: null };
-  }
-
-  try {
-    // Check if sector generates tickets
-    const { data: sector } = await supabase
-      .from('sectors')
-      .select('gera_ticket, mensagem_boas_vindas')
-      .eq('id', sectorId)
-      .single();
-
-    if (!sector?.gera_ticket) {
-      console.log('[evolution-webhook] Sector does not generate tickets');
-      return { ticketId: null, welcomeMessage: null };
-    }
-
-    // Check if there's already an open ticket for this conversation
-    const { data: existingTicket } = await supabase
-      .from('tickets')
-      .select('id')
-      .eq('conversation_id', conversationId)
-      .neq('status', 'finalizado')
-      .maybeSingle();
-
-    if (existingTicket) {
-      console.log('[evolution-webhook] Open ticket already exists:', existingTicket.id);
-      return { ticketId: existingTicket.id, welcomeMessage: null };
-    }
-
-    // Create new ticket
-    const { data: newTicket, error } = await supabase
-      .from('tickets')
-      .insert({
-        conversation_id: conversationId,
-        sector_id: sectorId,
-        status: 'aberto',
-      })
-      .select('id')
-      .single();
-
-    if (error) {
-      console.error('[evolution-webhook] Error creating ticket:', error);
-      return { ticketId: null, welcomeMessage: null };
-    }
-
-    console.log('[evolution-webhook] Ticket created:', newTicket.id);
-    return { 
-      ticketId: newTicket.id, 
-      welcomeMessage: sector.mensagem_boas_vindas 
-    };
-  } catch (error) {
-    console.error('[evolution-webhook] Error in createTicketIfNeeded:', error);
-    return { ticketId: null, welcomeMessage: null };
-  }
-}
-
 // Find or create conversation
 async function findOrCreateConversation(
   supabase: any,
   instanceId: string,
   contactId: string
-): Promise<{ conversationId: string | null; isNew: boolean; sectorId: string | null }> {
+): Promise<string | null> {
   try {
     // Try to find existing conversation
     const { data: existingConversation, error: findError } = await supabase
@@ -546,11 +483,7 @@ async function findOrCreateConversation(
 
     if (existingConversation) {
       console.log('[evolution-webhook] Conversation found:', existingConversation.id);
-      return { 
-        conversationId: existingConversation.id, 
-        isNew: false, 
-        sectorId: existingConversation.sector_id 
-      };
+      return existingConversation.id;
     }
 
     // Find default sector for this instance
@@ -579,7 +512,7 @@ async function findOrCreateConversation(
 
     if (createError) {
       console.error('[evolution-webhook] Error creating conversation:', createError);
-      return { conversationId: null, isNew: false, sectorId: null };
+      return null;
     }
 
     console.log('[evolution-webhook] Conversation created:', newConversation.id);
@@ -587,10 +520,10 @@ async function findOrCreateConversation(
     // Apply auto-assignment for new conversations (with sector context)
     await applyAutoAssignment(supabase, instanceId, newConversation.id, sectorId);
     
-    return { conversationId: newConversation.id, isNew: true, sectorId };
+    return newConversation.id;
   } catch (error) {
     console.error('[evolution-webhook] Error in findOrCreateConversation:', error);
-    return { conversationId: null, isNew: false, sectorId: null };
+    return null;
   }
 }
 
@@ -849,7 +782,7 @@ async function processMessageUpsert(payload: EvolutionWebhookPayload, supabase: 
     }
 
     // Find or create conversation
-    const { conversationId, isNew, sectorId } = await findOrCreateConversation(
+    const conversationId = await findOrCreateConversation(
       supabase,
       instanceData.id,
       contactId
@@ -858,19 +791,6 @@ async function processMessageUpsert(payload: EvolutionWebhookPayload, supabase: 
     if (!conversationId) {
       console.error('[evolution-webhook] Failed to create/find conversation');
       return;
-    }
-
-    // Create ticket if sector requires it (only for messages from client, not from me)
-    let currentTicketId: string | null = null;
-    if (!key.fromMe && sectorId) {
-      const { ticketId, welcomeMessage } = await createTicketIfNeeded(supabase, conversationId, sectorId);
-      currentTicketId = ticketId;
-      
-      // Send welcome message if this is a new ticket
-      if (welcomeMessage && ticketId && isNew) {
-        // TODO: Send welcome message via Evolution API
-        console.log('[evolution-webhook] Would send welcome message:', welcomeMessage);
-      }
     }
 
     // Detect message type and content
@@ -928,7 +848,6 @@ async function processMessageUpsert(payload: EvolutionWebhookPayload, supabase: 
         status: 'sent',
         quoted_message_id: quotedMessageId,
         timestamp,
-        ticket_id: currentTicketId,
       });
 
     if (messageError) {
