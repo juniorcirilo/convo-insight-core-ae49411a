@@ -9,6 +9,10 @@ export interface Sector {
   description: string | null;
   is_default: boolean;
   is_active: boolean;
+  tipo_atendimento: 'humano' | 'chatbot';
+  gera_ticket: boolean;
+  mensagem_boas_vindas: string | null;
+  mensagem_encerramento: string | null;
   created_at: string;
   updated_at: string;
 }
