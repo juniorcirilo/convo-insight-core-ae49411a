@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Search, Image, FileText, X, Upload } from "lucide-react";
 import { useCampaigns, Campaign } from "@/hooks/campaigns/useCampaigns";
@@ -535,7 +534,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
                     />
                   </div>
 
-                  <ScrollArea className="h-[180px] border rounded-md p-2">
+                  <div className="h-[180px] overflow-auto border rounded-md p-2">
                     {contactsLoading ? (
                       <div className="flex items-center justify-center h-full">
                         <Loader2 className="h-6 w-6 animate-spin" />
@@ -548,7 +547,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
                             className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 cursor-pointer"
                             onClick={() => toggleContact(contact.id)}
                           >
-                            <Checkbox 
+                            <Checkbox
                               checked={selectedContacts.includes(contact.id)}
                               onCheckedChange={() => toggleContact(contact.id)}
                             />
@@ -564,7 +563,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
                         Nenhum contato com opt-in encontrado
                       </div>
                     )}
-                  </ScrollArea>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     Apenas contatos com opt-in ativo são exibidos
                   </p>
