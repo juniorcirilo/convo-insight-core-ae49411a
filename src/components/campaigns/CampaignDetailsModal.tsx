@@ -152,7 +152,12 @@ export const CampaignDetailsModal = ({ campaign, onClose, onEdit }: CampaignDeta
   const canEdit = campaign.status === "draft";
 
   return (
-    <Dialog open={!!campaign} onOpenChange={() => onClose()}>
+    <Dialog
+      open={!!campaign}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <div className="flex items-start justify-between pr-8">
