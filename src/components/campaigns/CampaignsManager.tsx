@@ -135,25 +135,29 @@ export const CampaignsManager = () => {
         </div>
       )}
 
-      <CampaignDialog
-        open={showCreateDialog || !!editingCampaign}
-        onOpenChange={(open) => {
-          if (!open) {
-            setShowCreateDialog(false);
-            setEditingCampaign(null);
-          }
-        }}
-        campaign={editingCampaign}
-      />
+      {(showCreateDialog || !!editingCampaign) && (
+        <CampaignDialog
+          open={showCreateDialog || !!editingCampaign}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowCreateDialog(false);
+              setEditingCampaign(null);
+            }
+          }}
+          campaign={editingCampaign}
+        />
+      )}
 
-      <CampaignDetailsModal
-        campaign={selectedCampaign}
-        onClose={() => setSelectedCampaign(null)}
-        onEdit={(campaign) => {
-          setSelectedCampaign(null);
-          setEditingCampaign(campaign);
-        }}
-      />
+      {!!selectedCampaign && (
+        <CampaignDetailsModal
+          campaign={selectedCampaign}
+          onClose={() => setSelectedCampaign(null)}
+          onEdit={(campaign) => {
+            setSelectedCampaign(null);
+            setEditingCampaign(campaign);
+          }}
+        />
+      )}
     </div>
   );
 };
