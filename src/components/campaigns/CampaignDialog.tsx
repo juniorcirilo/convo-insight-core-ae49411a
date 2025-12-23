@@ -302,7 +302,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="__none" disabled>
+                        <SelectItem value="__none">
                           Selecione uma instância
                         </SelectItem>
                         {instances?.filter(instance => instance.id).map((instance) => (

@@ -169,7 +169,7 @@ export function AssignmentRuleDialog({
                 <SelectValue placeholder="Selecionar instância..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none" disabled>
+                <SelectItem value="__none">
                   Selecionar instância...
                 </SelectItem>
                 {instances.filter(instance => instance.id).map((instance) => (
@@ -250,7 +250,7 @@ export function AssignmentRuleDialog({
                   <SelectValue placeholder="Selecionar agente..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none_agent" disabled>
+                  <SelectItem value="__none_agent">
                     Selecionar agente...
                   </SelectItem>
                   {agents.filter(agent => agent.id).map((agent) => (
