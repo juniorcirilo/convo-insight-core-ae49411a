@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -48,7 +48,15 @@ export function AssignmentRuleDialog({
   onSave,
 }: AssignmentRuleDialogProps) {
   const { instances = [] } = useWhatsAppInstances();
-  
+
+  const handleDialogOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen === open) return;
+      onOpenChange(nextOpen);
+    },
+    [open, onOpenChange],
+  );
+
   const [ruleType, setRuleType] = useState<'fixed' | 'round_robin'>(
     rule?.rule_type || 'fixed'
   );
@@ -149,7 +157,7 @@ export function AssignmentRuleDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -62,6 +62,14 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
   const selectedInstanceId = form.watch("instance_id");
   const messageType = form.watch("message_type");
   const campaignId = campaign?.id ?? null;
+
+  const handleDialogOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen === open) return;
+      onOpenChange(nextOpen);
+    },
+    [open, onOpenChange],
+  );
 
   // Fetch contacts for selected instance (only opt-in contacts)
   const { data: contacts, isLoading: contactsLoading } = useQuery({
@@ -268,7 +276,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{campaign ? "Editar Campanha" : "Nova Campanha"}</DialogTitle>
