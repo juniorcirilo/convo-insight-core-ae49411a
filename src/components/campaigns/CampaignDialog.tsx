@@ -96,7 +96,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
         message_type: (campaign.message_type as "text" | "image" | "document") || "text",
         scheduled_at: campaign.scheduled_at || "",
       });
-      setSelectedContacts(campaign.target_contacts as string[] || []);
+      setSelectedContacts((campaign.target_contacts as string[]) || []);
       // Handle existing media - campaign may have media_url from database
       const mediaUrl = (campaign as any).media_url;
       if (mediaUrl) {
@@ -117,7 +117,9 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
       setMediaPreview(null);
       setExistingMediaUrl(null);
     }
-  }, [campaign, form, open]);
+    // Only re-run when dialog opens/closes or campaign changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaign, open]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -290,7 +292,7 @@ export const CampaignDialog = ({ open, onOpenChange, campaign }: CampaignDialogP
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Instância</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value ?? ""}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione uma instância" />
