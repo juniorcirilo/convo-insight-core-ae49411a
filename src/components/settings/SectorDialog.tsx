@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useWhatsAppInstances } from "@/hooks/whatsapp";
 import { useSectors, type SectorWithInstance } from "@/hooks/useSectors";
+import { Ticket, Bot, MessageSquare } from "lucide-react";
 
 interface SectorDialogProps {
   open: boolean;
@@ -34,6 +35,10 @@ interface FormData {
   description: string;
   instance_id: string;
   is_default: boolean;
+  tipo_atendimento: 'humano' | 'chatbot';
+  gera_ticket: boolean;
+  mensagem_boas_vindas: string;
+  mensagem_encerramento: string;
 }
 
 export function SectorDialog({
@@ -50,8 +55,15 @@ export function SectorDialog({
       description: "",
       instance_id: "",
       is_default: false,
+      tipo_atendimento: "humano",
+      gera_ticket: false,
+      mensagem_boas_vindas: "",
+      mensagem_encerramento: "",
     },
   });
+
+  const geraTicket = watch("gera_ticket");
+  const tipoAtendimento = watch("tipo_atendimento");
 
   useEffect(() => {
     if (sector) {
@@ -60,6 +72,10 @@ export function SectorDialog({
         description: sector.description || "",
         instance_id: sector.instance_id,
         is_default: sector.is_default,
+        tipo_atendimento: sector.tipo_atendimento || "humano",
+        gera_ticket: sector.gera_ticket || false,
+        mensagem_boas_vindas: sector.mensagem_boas_vindas || "",
+        mensagem_encerramento: sector.mensagem_encerramento || "",
       });
     } else {
       reset({
@@ -67,6 +83,10 @@ export function SectorDialog({
         description: "",
         instance_id: instances[0]?.id || "",
         is_default: false,
+        tipo_atendimento: "humano",
+        gera_ticket: false,
+        mensagem_boas_vindas: "",
+        mensagem_encerramento: "",
       });
     }
   }, [sector, instances, reset]);
@@ -78,6 +98,10 @@ export function SectorDialog({
       instance_id: data.instance_id,
       is_default: data.is_default,
       is_active: true,
+      tipo_atendimento: data.tipo_atendimento,
+      gera_ticket: data.gera_ticket,
+      mensagem_boas_vindas: data.gera_ticket ? (data.mensagem_boas_vindas || null) : null,
+      mensagem_encerramento: data.gera_ticket ? (data.mensagem_encerramento || null) : null,
     };
 
     if (sector) {
@@ -91,7 +115,7 @@ export function SectorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {sector ? "Editar Setor" : "Novo Setor"}
@@ -139,6 +163,37 @@ export function SectorDialog({
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label>Tipo de Atendimento</Label>
+            <Select
+              value={watch("tipo_atendimento")}
+              onValueChange={(value: 'humano' | 'chatbot') => setValue("tipo_atendimento", value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="humano">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Atendimento Humano</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="chatbot">
+                  <div className="flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                    <span>Chatbot (IA)</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {tipoAtendimento === 'chatbot' 
+                ? 'Respostas automáticas serão geradas por IA'
+                : 'Mensagens serão respondidas por agentes humanos'}
+            </p>
+          </div>
+
           <div className="flex items-center justify-between rounded-lg border border-border p-4">
             <div className="space-y-0.5">
               <Label htmlFor="is_default">Setor Padrão</Label>
@@ -152,6 +207,58 @@ export function SectorDialog({
               onCheckedChange={(checked) => setValue("is_default", checked)}
             />
           </div>
+
+          <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-4">
+            <div className="flex items-start gap-3">
+              <Ticket className="h-5 w-5 text-primary mt-0.5" />
+              <div className="space-y-0.5">
+                <Label htmlFor="gera_ticket">Gera Tickets de Suporte</Label>
+                <p className="text-xs text-muted-foreground">
+                  Ativar sistema de tickets com abertura, encerramento e feedback
+                </p>
+              </div>
+            </div>
+            <Switch
+              id="gera_ticket"
+              checked={watch("gera_ticket")}
+              onCheckedChange={(checked) => setValue("gera_ticket", checked)}
+            />
+          </div>
+
+          {geraTicket && (
+            <div className="space-y-4 rounded-lg border border-border p-4 bg-muted/30">
+              <h4 className="font-medium text-sm flex items-center gap-2">
+                <Ticket className="h-4 w-4" />
+                Configurações do Ticket
+              </h4>
+              
+              <div className="space-y-2">
+                <Label htmlFor="mensagem_boas_vindas">Mensagem de Boas-vindas</Label>
+                <Textarea
+                  id="mensagem_boas_vindas"
+                  placeholder="Olá! Seu ticket de suporte foi aberto. Em breve um atendente irá ajudá-lo."
+                  {...register("mensagem_boas_vindas")}
+                  rows={2}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enviada automaticamente quando um novo ticket é criado
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mensagem_encerramento">Mensagem de Encerramento</Label>
+                <Textarea
+                  id="mensagem_encerramento"
+                  placeholder="Seu atendimento foi encerrado. Por favor, avalie nosso atendimento de 1 a 5."
+                  {...register("mensagem_encerramento")}
+                  rows={2}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enviada quando o ticket é finalizado, seguida de solicitação de feedback
+                </p>
+              </div>
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

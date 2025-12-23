@@ -11,6 +11,7 @@ import { ChatHeaderMenu } from "./ChatHeaderMenu";
 import { QueueIndicator } from "@/components/conversations/QueueIndicator";
 import { AssignAgentDialog } from "@/components/conversations/AssignAgentDialog";
 import { EditContactModal } from "./EditContactModal";
+import { TicketIndicator } from "./TicketIndicator";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversationAssignment } from "@/hooks/whatsapp/useConversationAssignment";
@@ -36,22 +37,25 @@ export const ChatHeader = ({ contact, sentiment, isAnalyzing, onAnalyze, convers
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);
   const [sectorName, setSectorName] = useState<string | null>(null);
+  const [sectorGeraTicket, setSectorGeraTicket] = useState<boolean>(false);
   const { user, isAdmin, isSupervisor } = useAuth();
   const { assignConversation } = useConversationAssignment();
   
-  // Fetch sector name
+  // Fetch sector name and gera_ticket
   useEffect(() => {
     if (conversation?.sector_id) {
       supabase
         .from('sectors')
-        .select('name')
+        .select('name, gera_ticket')
         .eq('id', conversation.sector_id)
         .single()
         .then(({ data }) => {
           setSectorName(data?.name || null);
+          setSectorGeraTicket(data?.gera_ticket || false);
         });
     } else {
       setSectorName(null);
+      setSectorGeraTicket(false);
     }
   }, [conversation?.sector_id]);
   
@@ -138,6 +142,13 @@ export const ChatHeader = ({ contact, sentiment, isAnalyzing, onAnalyze, convers
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Ticket Indicator */}
+          {conversationId && (
+            <TicketIndicator 
+              conversationId={conversationId} 
+              sectorGeraTicket={sectorGeraTicket} 
+            />
+          )}
           {/* Assignment buttons */}
           {conversation && isInQueue && (
             <Button
