@@ -84,10 +84,10 @@ export function AssignmentRuleDialog({
 
   // Reset sector when instance changes
   useEffect(() => {
-    if (selectedInstanceId && !rule?.sector_id) {
+    if (selectedInstanceId && !rule?.sector_id && selectedSectorId !== "") {
       setValue("sector_id", "");
     }
-  }, [selectedInstanceId, setValue, rule]);
+  }, [selectedInstanceId, selectedSectorId, setValue, rule?.sector_id]);
 
   // Reset form when rule changes
   useEffect(() => {
@@ -100,7 +100,7 @@ export function AssignmentRuleDialog({
         fixed_agent_id: rule.fixed_agent_id || "",
         round_robin_agents: rule.round_robin_agents || [],
       });
-      setRuleType(rule.rule_type as 'fixed' | 'round_robin' || 'fixed');
+      setRuleType((rule.rule_type as 'fixed' | 'round_robin') || 'fixed');
       setRoundRobinAgents(rule.round_robin_agents || []);
     } else {
       reset({
@@ -114,7 +114,8 @@ export function AssignmentRuleDialog({
       setRuleType('fixed');
       setRoundRobinAgents([]);
     }
-  }, [rule, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rule?.id, open]);
 
   const onSubmit = (data: FormData) => {
     const payload = {
@@ -161,8 +162,7 @@ export function AssignmentRuleDialog({
           <div className="space-y-2">
             <Label htmlFor="instance">Instância</Label>
             <Select
-              key={`instance-${rule?.id || 'new'}`}
-              defaultValue={watch("instance_id") || undefined}
+              value={watch("instance_id")}
               onValueChange={(value) => setValue("instance_id", value)}
             >
               <SelectTrigger>
@@ -183,8 +183,7 @@ export function AssignmentRuleDialog({
             <div className="space-y-2">
               <Label htmlFor="sector">Setor (opcional)</Label>
               <Select
-                key={`sector-${rule?.id || 'new'}-${selectedInstanceId}`}
-                defaultValue={watch("sector_id") || "all_sectors"}
+                value={watch("sector_id") || "all_sectors"}
                 onValueChange={(value) => setValue("sector_id", value === "all_sectors" ? "" : value)}
               >
                 <SelectTrigger>
@@ -241,8 +240,7 @@ export function AssignmentRuleDialog({
             <div className="space-y-2">
               <Label htmlFor="agent">Agente</Label>
               <Select
-                key={`agent-${rule?.id || 'new'}-${selectedSectorId || selectedInstanceId}`}
-                defaultValue={watch("fixed_agent_id") || undefined}
+                value={watch("fixed_agent_id")}
                 onValueChange={(value) => setValue("fixed_agent_id", value)}
               >
                 <SelectTrigger>
